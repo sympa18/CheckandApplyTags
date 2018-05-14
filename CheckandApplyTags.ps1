@@ -2,7 +2,7 @@
 Login-AzureRmAccount
 
 #List all Resources within the Subscription
-$Resources = Find-AzureRmResource
+$Resources = Get-AzureRmResource
 
 #For each Resource apply the Tag of the Resource Group
 Foreach ($resource in $Resources)
