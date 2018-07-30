@@ -11,7 +11,7 @@ ForEach ($vsub in $subscriptions)
 	Select-AzureRmSubscription $vsub.SubscriptionID
 
 	#List all Resources within the Subscription
-	$Resources = Get-AzureRmResourceGroup
+	$Resources = Get-AzureRmResource
 
 	#For each Resource apply the Tag of the Resource Group
 	Foreach ($resource in $Resources)
