@@ -1,47 +1,57 @@
 #Login to Azure
 Login-AzureRmAccount
 
-#List all Resources within the Subscription
-$Resources = Find-AzureRmResource
+#List all Subscriptions within the Tenant
+$subscriptions=Get-AzureRMSubscription
 
-#For each Resource apply the Tag of the Resource Group
-Foreach ($resource in $Resources)
+ForEach ($vsub in $subscriptions)
 {
-    $Rgname = $resource.Resourcegroupname
 
-    $resourceid = $resource.resourceId
-    $RGTags = (Get-AzureRmResourceGroup -Name $Rgname).Tags
+	#Set current Subscription
+	Select-AzureRmSubscription $vsub.SubscriptionID
 
-    $resourcetags = $resource.Tags
+	#List all Resources within the Subscription
+	$Resources = Get-AzureRmResource
 
-    If ($resourcetags -eq $null)
-        {
-            Write-Output "---------------------------------------------"
-            Write-Output "Applying the following Tags to $($resourceid)" $RGTags
-            Write-Output "---------------------------------------------"
-            $Settag = Set-AzureRmResource -ResourceId $resourceid -Tag $RGTagS -Force
-            
-        }
-    Else
-        {
-            $RGTagFinal = @{}
-            $RGTagFinal = $RGTags                  
-                    Foreach ($resourcetag in $resourcetags.GetEnumerator())
-                    {
-                
-                    If ($RGTags.Keys -inotcontains $resourcetag.Key)
-                        {                        
-                                Write-Output "------------------------------------------------"
-                                Write-Output "Keydoesn't exist in RG Tags adding to Hash Table" $resourcetag
-                                Write-Output "------------------------------------------------"
-                                $RGTagFinal.Add($resourcetag.Key,$resourcetag.Value)
-                        }    
+	#For each Resource apply the Tag of the Resource Group
+	Foreach ($resource in $Resources)
+	{
+						
+	    $Rgname = $resource.Resourcegroupname
 
-                    }
-            Write-Output "---------------------------------------------"
-            Write-Output "Applying the following Tags to $($resourceid)" $RGTagFinal
-            Write-Output "---------------------------------------------"
-            $Settag = Set-AzureRmResource -ResourceId $resourceid -Tag $RGTagFinal -Force
-        }   
+	    $resourceid = $resource.resourceId
+	    $RGTags = (Get-AzureRmResourceGroup -Name $Rgname).Tags
+
+	    $resourcetags = $resource.Tags
+
+	    If ($resourcetags -eq $null)
+	        {
+	            Write-Output "---------------------------------------------"
+	            Write-Output "Applying the following Tags to $($resourceid)" $RGTags
+	            Write-Output "---------------------------------------------"
+	            $Settag = Set-AzureRmResource -ResourceId $resourceid -Tag $RGTagS -Force
+	            
+	        }
+	    Else
+	        {
+	            $RGTagFinal = @{}
+	            $RGTagFinal = $RGTags                  
+	                    Foreach ($resourcetag in $resourcetags.GetEnumerator())
+	                    {
+	                
+	                    If ($RGTags.Keys -inotcontains $resourcetag.Key)
+	                        {                        
+	                                Write-Output "------------------------------------------------"
+	                                Write-Output "Keydoesn't exist in RG Tags adding to Hash Table" $resourcetag
+	                                Write-Output "------------------------------------------------"
+	                                $RGTagFinal.Add($resourcetag.Key,$resourcetag.Value)
+	                        }    
+
+	                    }
+	            Write-Output "---------------------------------------------"
+	            Write-Output "Applying the following Tags to $($resourceid)" $RGTagFinal
+	            Write-Output "---------------------------------------------"
+	            $Settag = Set-AzureRmResource -ResourceId $resourceid -Tag $RGTagFinal -Force
+	        }   
+	}
 }
-
